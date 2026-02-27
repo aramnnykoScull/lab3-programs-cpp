@@ -1,0 +1,288 @@
+% !TeX program = xelatex    
+
+% Явное указание компилятора для редакторов
+\documentclass[14pt, a4paper]{extarticle}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+% Основной шрифт для всего документа
+\setmainfont{Times New Roman}
+% Явное указание кириллического шрифта
+\newfontfamily\cyrillicfont{Times New Roman}
+% Шрифт для моноширинного текста (листинги, код) с поддержкой кириллицы
+\newfontfamily\cyrillicfonttt{Times New Roman} % Если хотите везде Times New Roman
+
+% Пакеты для оформления и содержания 
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+\usepackage{needspace}
+
+\usepackage{needspace}
+\usepackage{etoolbox}
+
+% Настройки для предотвращения плохих разрывов листингов
+\BeforeBeginEnvironment{lstlisting}{%
+  \par
+  \needspace{7\baselineskip}% Минимум 7 строк должно остаться
+  \nopagebreak[4]% Максимальный приоритет запрета разрыва
+  \penalty -500\relax% Поощряем разрыв ДО листинга если нужно
+}
+
+\AfterEndEnvironment{lstlisting}{%
+  \par
+  \nopagebreak[3]% Средний приоритет запрета разрыва после
+  \penalty 3000\relax% Штрафуем разрыв сразу после рамки
+}
+
+% Глобальные настройки для борьбы с "висячими" строками
+\clubpenalty=10000    % Штраф за одиночную строку в начале страницы
+\widowpenalty=10000   % Штраф за одиночную строку в конце страницы
+\brokenpenalty=10000  % Штраф за разбитую строку с переносом
+
+% Улучшаем настройки листингов
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\footnotesize,
+    numbers=left,
+    numberstyle=\tiny,
+    frame=single,
+    breaklines=true,
+    breakatwhitespace=true,
+    showspaces=false,
+    showstringspaces=false,
+    captionpos=b,
+    inputencoding=utf8,
+    extendedchars=true,
+    keepspaces=true,
+    % Увеличиваем вертикальные отступы
+    aboveskip=10pt,
+    belowskip=10pt,
+    % Индикаторы переноса
+    prebreak=\mbox{\quad$\hookrightarrow$},
+    postbreak=\mbox{$\hookleftarrow$\space},
+    % Улучшаем перенос длинных строк
+    tabsize=4,
+    columns=flexible,
+}
+
+
+% Настройки по ГОСТ 
+\geometry{left=30mm, right=15mm, top=20mm, bottom=20mm}
+\onehalfspacing
+\parindent=1.25cm
+\pagestyle{plain} % Добавляем нумерацию страниц внизу по центру (по ГОСТ)
+
+% Настройка стилей заголовков по ГОСТ 
+\titleformat{\section}{\normalfont\bfseries\centering}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\bfseries\raggedright}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\bfseries\raggedright}{\thesubsubsection}{1em}{}
+
+
+% Настройка нумерации листингов 
+\renewcommand{\lstlistingname}{Листинг}
+\renewcommand{\lstlistlistingname}{Список листингов}
+
+% Настройка списков 
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+
+% Выравнивание текста по ширине 
+\justifying
+
+\begin{document}
+
+\subsection*{Цель работы:}
+Изучить разработку и реализацию программ с использованием условных и циклических алгоритмов.
+
+\subsection*{Задание:}
+\begin{enumerate}[label=\arabic*)]
+    \item Разработать консольное приложение для определения, является ли число положительным, отрицательным или нулем (через if/else).
+    \item Разработать консольное приложение для подсчета суммы элементов массива от 1 до 10 (через for).
+    \item Разработать консольное приложение для распределения человека в команду в зависимости от его класса (через switch).
+    \item Разработать консольное приложение для подсчета суммы элементов массива от 1 до 10 с выводом, пока сумма меньше 32 (через do while).
+\end{enumerate}
+
+\subsection*{Ход работы:}
+
+\subsubsection*{Теоретическая информация}
+Условные операторы (if/else, switch) позволяют изменять поток выполнения программы в зависимости от условий. Циклические конструкции (for, do while) используются для многократного выполнения блоков кода. В данной работе рассматриваются основные управляющие конструкции языка C++.
+
+\subsubsection*{Подзадание №1:}
+Программа определяет знак введенного числа с использованием условного оператора if/else. Реализована обработка исключений при некорректном вводе.
+Код программы представлен ниже (Листинг \ref{lst:lab3_point1}, Рисунок \ref{fig:lab3_image1}).
+
+\begin{lstlisting}[caption={Код программы для задания 1}, label=lst:lab3_point1]
+#include <iostream>
+using namespace std;
+
+int main() {
+    bool flag = true;
+    string input;
+
+    cout << "Введите число: ";
+    
+    if (!getline(cin, input) || input.empty()) {
+        cout << "Вы не ввели число" << endl;
+        return 1;
+    }
+
+    try {
+        double number = stod(input); // пытаемся преобразовать в double
+
+        cout << "Ваше число ";
+
+        if (number == 0)
+        cout << "ноль" << endl;
+        else if(number < 0)
+        cout << "отрицательное" << endl;
+        else
+        cout << "положительное" << endl;
+
+    } catch (...) {
+        cout << "Вы ввели не число" << endl;
+        flag = false;
+    }
+
+    return flag ? 0 : 1;
+}
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth, height=0.4\textheight, keepaspectratio]{media/lab3_image1.png}
+    \caption{Пример выполнения программы для задания 1}
+    \label{fig:lab3_image1}
+\end{figure}
+
+\subsubsection*{Подзадание №2:}
+Программа вычисляет сумму элементов массива с использованием цикла for. Массив инициализирован константными значениями от 1 до 10.
+Код программы представлен ниже (Листинг \ref{lst:lab3_point2}, Рисунок \ref{fig:lab3_image2}).
+
+\begin{lstlisting}[caption={Код программы для задания 2}, label=lst:lab3_point2]
+#include <iostream>
+using namespace std;
+
+int main() {
+    const int arr[] = {1,2,3,4,5,6,7,8,9,10};
+    const int size = sizeof(arr) / sizeof(arr[0]);
+
+    cout << "Массив: ";
+    for(int i = 0; i < size; i++) cout << arr[i] << " ";
+    cout << endl;  
+    int sum = 0;
+
+    cout << "Сумма массива: ";
+    for(int i = 0; i < size; i++) sum += arr[i];
+    cout << sum << endl;
+    return 0;
+}
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth, height=0.6\textheight, keepaspectratio]{media/lab3_image2.png}
+    \caption{Пример выполнения программы для задания 2}
+    \label{fig:lab3_image2}
+\end{figure}
+
+\subsubsection*{Подзадание №3:}
+Программа распределяет человека в команду по номеру класса с использованием оператора switch. Реализована проверка корректности ввода.
+
+Код программы представлен ниже (Листинг \ref{lst:lab3_point3}, Рисунок \ref{fig:lab3_image3}).
+
+\begin{lstlisting}[caption={Код программы для задания 3}, label=lst:lab3_point3]
+#include <iostream>
+using namespace std;
+
+int main() {
+    bool flag = true;
+    string input;
+    cout << "Введите номер класса (1-4 (одну цифру)): ";
+
+    if (!getline(cin, input) || input.empty()) {
+        cout << "Вы не ввели число" << endl;
+        return 1;
+    }
+    try {
+        int number = stoi(input); // пытаемся преобразовать в int
+        cout << "Вы в команде ";  
+        switch(number){
+            case 1: cout << "зеленых" << endl; break;
+            case 2: cout << "красных" << endl; break;
+            case 3: cout << "синих" << endl; break;
+            case 4: cout << "желтых" << endl; break;
+            default: cout << "...никакой, нет такого класса" << endl; flag = false; break;
+        }
+    } catch (...) {
+        cout << "Вы ввели не число" << endl;
+        flag = false;
+    }
+    return flag ? 0 : 1;
+}
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth, height=0.6\textheight, keepaspectratio]{media/lab3_image3.png}
+    \caption{Пример выполнения программы для задания 3}
+    \label{fig:lab3_image3}
+\end{figure}
+
+\subsubsection*{Подзадание №4:}
+Программа выводит частичные суммы массива, пока общая сумма не превысит 32, с использованием цикла do while. На каждой итерации выводится текущее состояние массива и сумма.
+Код программы представлен ниже (Листинг \ref{lst:lab3_point4}, Рисунок \ref{fig:lab3_image4}).
+
+\begin{lstlisting}[caption={Код программы для задания 4}, label=lst:lab3_point4]
+#include <iostream>
+using namespace std;
+
+int main() {
+    const int arr[] = {1,2,3,4,5,6,7,8,9,10};
+    const int size = sizeof(arr) / sizeof(arr[0]);
+    
+    int i = 0;
+    int sum = arr[i];
+    
+    do {
+        cout << "Элементы массива: [";
+        for (int j = 0; j <= i; j++) {
+            if (j > 0) cout << ", ";
+            cout << arr[j];
+        }
+        cout << "] ";
+        
+        cout << "Сумма массива: " << sum << endl;
+        i++;
+
+        sum += arr[i]; // Увеличивает уже на следующую итерацию
+        
+    } while (sum < 32 && i < size);
+
+    return 0;
+}
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth, height=0.7\textheight, keepaspectratio]{media/lab3_image4.png}
+    \caption{Пример выполнения программы для задания 4}
+    \label{fig:lab3_image4}
+\end{figure}
+
+
+\subsection*{Вывод:}
+В ходе работы были изучены условные и циклические конструкции в C++. Реализованы программы для определения знака числа, суммирования элементов массива, распределения по командам и итеративного вывода сумм. Приобретены навыки работы с разными типами циклов и операторами ветвления.
+
+\end{document}
